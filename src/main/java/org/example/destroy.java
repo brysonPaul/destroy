@@ -1,5 +1,7 @@
 package org.example;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -42,6 +44,7 @@ public class destroy
             computers.addToDJSet(connectionsDestroyed[x]);
             finalOutputs.add(computers.findConnectivity());//adds it to end
         }
+        computers.printSet();
         //prints out the final amount of things from the back forward to simulate "severing" each connection
         while(finalOutputs.size()!=0){
             System.out.println(finalOutputs.remove(finalOutputs.size()-1));
@@ -68,6 +71,7 @@ class djSet {
             if(set[set2].contains(set2)){
                 set[set2].remove((Object)set2);
             }
+            if(set[2].contains(set1)) return;
             set[set2].add(set1);
         }
         else{
@@ -75,11 +79,12 @@ class djSet {
             if(set[set1].contains(set1)){
                 set[set1].remove((Object)set1);
             }
+            if(set[1].contains(set2)) return;
             set[set1].add(set2);
         }
     }
     public int findSet(int index, ArrayList<Integer> used){
-        //if it is the set contained, we return
+        ArrayList<Integer> roots = new ArrayList<>();
         if(set[index].contains(index)){
             return index;
         }
@@ -87,16 +92,51 @@ class djSet {
         for(Integer num:set[index]){
             if(!used.contains(num)){
                 used.add(num);
-                return findSet(num,used);
+                roots.add(findSet(num,used));
+                used.remove((Object)num);
+                if(roots.contains(-1)){
+                    return -1;
+                }
             }
         }
-        return -1;
+        removeDuplicates(roots);
+        System.out.println(roots);
+        if(roots.size()==1){
+            return roots.get(0);
+        }
+        else{
+            Collections.sort(roots);
+            for(int x=1;x<roots.size();x++){
+                String s= roots.get(0)+" "+roots.get(x);
+                System.out.println(s);
+                addToDJSet(s);
+            }
+            return -1;
+        }
+
     }
+
+    void removeDuplicates(ArrayList<Integer> roots) {
+        for(int x=0;x<roots.size()-1;x++){
+            for(int y=x+1;y<roots.size();y++){
+                if(roots.get(x)==roots.get(y)){
+                    roots.remove(y);
+                    x=0;
+                }
+            }
+        }
+    }
+
     public int findConnectivity(){
         //we start at set 1 because set 0 is there to preserve sanity when reading
         HashMap<Integer,Integer> hmap= new HashMap<>();
         for(int x=1;x<set.length;x++){
             int hold = findSet(x,new ArrayList<Integer>());
+            if(hold==-1){
+                x=0;
+                hmap.clear();
+                continue;
+            }
             if(hmap.containsKey(hold)){
                 hmap.put(hold,hmap.get(hold)+1);
             }
