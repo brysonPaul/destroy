@@ -37,6 +37,7 @@ public class destroy
         for(int x=0;x<currentConnections.size();x++){
             computers.addToDJSet(currentConnections.get(x));
         }
+        computers.printSet();
         //shows current state of the array missing the conections
         finalOutputs.add(computers.findConnectivity());
         for(int x=connectionsDestroyed.length-1;x>=0;x--){
@@ -46,7 +47,7 @@ public class destroy
         }
         computers.printSet();
         //prints out the final amount of things from the back forward to simulate "severing" each connection
-        while(finalOutputs.size()!=0){
+        while(finalOutputs.size()>0){
             System.out.println(finalOutputs.remove(finalOutputs.size()-1));
         }
 
@@ -65,13 +66,14 @@ class djSet {
         //parses string into two sets
         int set1 = Integer.parseInt(s.substring(0,1));
         int set2 = Integer.parseInt(s.substring(2,3));
+        System.out.println("SET1:"+set1+" SET2:"+set2);
         //our DJ set makes it so that the bigger of the two connects to the other one
         if(set1 < set2){
             //done so to make sure it is not a root anymore
             if(set[set2].contains(set2)){
                 set[set2].remove((Object)set2);
             }
-            if(set[2].contains(set1)) return;
+            if(set[set2].contains(set1)) return;
             set[set2].add(set1);
         }
         else{
@@ -79,7 +81,7 @@ class djSet {
             if(set[set1].contains(set1)){
                 set[set1].remove((Object)set1);
             }
-            if(set[1].contains(set2)) return;
+            if(set[set1].contains(set2)) return;
             set[set1].add(set2);
         }
     }
@@ -99,8 +101,11 @@ class djSet {
                 }
             }
         }
+        //removes any duplicates which may occur
         removeDuplicates(roots);
-        System.out.println(roots);
+        if(roots.size()==0 || roots==null){
+            return -1;
+        }
         if(roots.size()==1){
             return roots.get(0);
         }
