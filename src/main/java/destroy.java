@@ -51,13 +51,13 @@ public class destroy {
 }
 
 class djSet {
-    int[] set;
+    long[] set;
 
     public djSet(int x) {
-        set = new int[x + 1];
+        set = new long[x + 1];
         //makes each set at least contain itself
-        for (int i = 0; i < set.length; i++) {
-            set[i] = i;
+        for (long i = 0; i < set.length; i++) {
+            set[(int)i] = i;
         }
     }
 
@@ -67,53 +67,34 @@ class djSet {
         String[] sets = s.split(" ");
         int set1 = Integer.parseInt(sets[0]);
         int set2 = Integer.parseInt(sets[1]);
-        //our DJ set makes it so that the bigger of the two connects to the other one
+        long root1 = findSet(set1);
+        long root2 = findSet(set2);
 
-        int hold = 0;
-        if (set1 < set2) {
-            hold = set[set2];
-            if (hold != set2) {
-                if (hold > set1) {
-                    set[set2] = set1;
-                    union(hold + " " + findSet(set2));
-                } else {
-                    union(set1 + " " + findSet(set2));
-                }
-            }
-            set[set2] = set1;
-        } else {
-            hold = set[set1];
-            if (hold != set1) {
-                if (hold > set2) {
-                    set[set1] = set2;
-                    union(hold + " " + findSet(set1));
-                } else {
-                    union(set2 + " " + findSet(set1));
-                }
-            }
-            set[set1] = set2;
-        }
+        if (root1 == root2) return;
+
+        // Attach tree of v2 to tree of v1.
+        set[(int) root2] = root1;
     }
 
     //returns the root of the set working with, and does path compression on the way out for speed ups later
-    public int findSet(int index) {
+    public long findSet(long index) {
         //we found our root
-        if (set[index] == index) {
+        if (set[(int) index] == index) {
             return index;
         }
         //recursively finds the highest root, then does path compression to make sure everything else is also apart of the set
-        int hold = findSet(set[index]);
-        set[index] = hold;
+        long hold = findSet(set[(int) index]);
+        set[(int) index] = hold;
         return hold;
     }
 
     //finds the connectivity by going through the array and groups similar roots together. At end squares each similar root total and sums it
     public long findConnectivity() {
-        int sum = 0;
-        int[] arr = new int[set.length];
+        long sum = 0;
+        long[] arr = new long[set.length];
         //we have to start at one because we technically make a zero'th set, thus offsetting each number by one
         for (int x = 1; x < arr.length; x++) {
-            arr[findSet(set[x])] += 1;
+            arr[(int)findSet(set[x])] += 1;
         }
         for (int x = 0; x < arr.length; x++) {
             if (arr[x] == 0) {
