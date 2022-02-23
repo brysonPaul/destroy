@@ -1,7 +1,6 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Scanner;
 import java.util.StringTokenizer;
 
 //Bryson Paul       2/02/2022       Arup Guha COP3503 Destroy Solution
@@ -26,7 +25,7 @@ public class destroy {
         }
         //adds rest of values to dj set, and disregards marked ones from the djSet
         for (int x = 0; x < currentConnections.length; x++) {
-            if (currentConnections[x]!=null) {
+            if (currentConnections[x] != null) {
                 computers.union(currentConnections[x]);
             }
         }
@@ -46,17 +45,18 @@ public class destroy {
 }
 
 class djSet {
-    long[] set;
-    long[] size;
+    int[] set;
+    int[] size;
+
     public djSet(int x) {
-        set = new long[x + 1];
-        size = new long[x + 1];
+        set = new int[x + 1];
+        size = new int[x + 1];
         //makes each set at least contain itself
-        for (long i = 0; i < set.length; i++) {
-            set[(int)i] = i;
-            size[(int)i] = 1;
+        for (int i = 0; i < set.length; i++) {
+            set[i] = i;
+            size[i] = 1;
         }
-        size[0]=0;
+        size[0] = 0;
     }
 
     //adds string of two sets to each other
@@ -65,34 +65,35 @@ class djSet {
         String[] sets = s.split(" ");
         int set1 = Integer.parseInt(sets[0]);
         int set2 = Integer.parseInt(sets[1]);
-        long root1 = findSet(set1);
-        long root2 = findSet(set2);
+        int root1 = findSet(set1);
+        int root2 = findSet(set2);
 
         if (root1 == root2) return;
 
         // Attach tree of v2 to tree of v1, then add the size of root2 into the size array of root1
-        set[(int) root2] = root1;
-        size[(int) root1] += size[(int)root2];
-        size[(int)root2] = 0;
+        set[root2] = root1;
+        size[(int) root1] += size[(int) root2];
+        size[(int) root2] = 0;
     }
 
     //returns the root of the set working with, and does path compression on the way out for speed ups later
-    public long findSet(long index) {
+    public int findSet(int index) {
         //we found our root
         if (set[(int) index] == index) {
             return index;
         }
         //recursively finds the highest root, then does path compression to make sure everything else is also apart of the set
-        long hold = findSet(set[(int) index]);
-        set[(int) index] = hold;
+        int hold = findSet(set[(int) index]);
+        set[index] = hold;
         return hold;
     }
 
     //finds the connectivity by going through the array and groups similar roots together. At end squares each similar root total and sums it
     public long findConnectivity() {
         long sum = 0;
-        for(int x=0;x<size.length;x++){
-            sum+=(size[x]*size[x]);
+        for (int x = 0; x < size.length; x++) {
+            long hold = size[x];
+            sum += (hold * hold);
         }
         return sum;
     }
